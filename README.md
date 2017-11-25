@@ -1,2 +1,2 @@
 # sqldf
-Library for quering DataFrames using SQL
+Library for quering DataFrames using SQL.
