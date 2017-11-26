@@ -1,2 +1,1 @@
-import sqldf.sqldf import sql  # noqa
-
+from sqldf.sqldf import sql  # noqa

@@ -2,6 +2,7 @@ from pyspark import SparkContext
 from pyspark import RDD
 from pyspark.sql import SQLContext
 from pyspark.sql import DataFrame
+from sqldf import templating
 import os
 
 
@@ -28,25 +29,27 @@ def get_column_names(dataframe) -> list:
 
 def convert_to_row(list_of_dictionaries: list) -> RDD:
 	"""
-	Converts list of dictionaries to pyspark suppored RDD format.
+	Converts list of dictionaries to pyspark supported RDD format.
 	
 	:param list_of_dictionaries:
 		A list of dictionaries. E.g.: [{'name': 'Rigo', 'age': 33}, {...}]
 	"""
 	
 	return sc.parallelize(list_of_dictionaries).map(lambda _: [
-		(v) for (k, v) in _.items()])
+		v for (k, v) in _.items()])
 
 
-def register_pyspark_df(pyspark_df: DataFrame):
+def register_pyspark_df(pyspark_df: DataFrame, table: str = 'dataframe'):
 	"""
 	Register the dataframe as a table so it can be query using sql
 	
 	:param pyspark_df:
 		A pyspark DataFrame
+	:param table:
+		The table name used in the query
 	"""
 	
-	sqlContext.registerDataFrameAsTable(pyspark_df, 'dataframe')
+	sqlContext.registerDataFrameAsTable(pyspark_df, table)
 
 
 def convert_to_pyspark_df(dataframe) -> DataFrame:
@@ -64,15 +67,15 @@ def convert_to_pyspark_df(dataframe) -> DataFrame:
 		for row in dataframe:
 			if type(row) is dict:
 				columns = get_column_names(dataframe)
-					rdd: RDD = convert_to_row(dataframe)
-					return sqlContext.createDataFrame(rdd, columns)
+				rdd: RDD = convert_to_row(dataframe)
+				return sqlContext.createDataFrame(rdd, columns)
 	elif type(dataframe) == 'pandas.core.frame.DataFrame':
 		return sqlContext.createDataFrame(dataframe)
 	else:
 		raise ValueError(f'Invalid DataFrame type: {type(dataframe)}')
 
 
-def sql(query: str, dataframe) -> DataFrame:
+def sql(query: str, dataframe=None, table: str = 'dataframe', **kwargs) -> DataFrame:
 	"""
 	Returns a pyspark Dataframe 
 	Example (RAW DataFrame): 
@@ -82,9 +85,14 @@ def sql(query: str, dataframe) -> DataFrame:
 	:param query: 
 		The query to run against the dataframe
 	:param dataframe:
-		A RAW, pyspark, or pandas dataframe		
+		A RAW, pyspark, or pandas dataframe
+	:param table:
+		The table name used in the query
+	:param kwargs:
+		Any rendering variables to inject into the SQL query file prior to executing the query.
 	"""
 	
 	pyspark_df: DataFrame = convert_to_pyspark_df(dataframe)
-	return register_pyspark_df(pyspark_df).sqlContext.sql(query)
-
+	register_pyspark_df(pyspark_df, table)
+	rendered_query = templating.render(query, **kwargs)
+	return sqlContext.sql(rendered_query)
