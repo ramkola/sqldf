@@ -18,9 +18,9 @@ with open(os.path.join(PACKAGE_ROOT, 'settings.json'), 'r') as f:
     settings = json.load(f)
 
 
-def populate_extra_files():
+def populate_extra_files(): 
     """
-    Creates a list of non-python data files to include in package distribution
+    Creates a list of non-python data files to include in package distribution.
     """
 
     globs = [

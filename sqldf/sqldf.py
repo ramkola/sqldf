@@ -21,7 +21,12 @@ def get_column_names(dataframe) -> list:
 
 
 def convert_to_row(list_of_dictionaries: list) -> RDD:
-
+		"""
+		Converts list of dictionaries to pyspark suppored RDD format.
+		
+		
+		"""
+		
     return sc.parallelize(list_of_dictionaries).map(lambda _: [(v) for (k, v) in _.items()])
 
 
