@@ -38,15 +38,15 @@ def convert_to_row(list_of_dictionaries: list) -> RDD:
 		(v) for (k, v) in _.items()])
 
 
-def register_pyspark_df(pyspark_dataframe: DataFrame):
+def register_pyspark_df(pyspark_df: DataFrame):
 	"""
 	Register the dataframe as a table so it can be query using sql
 	
-	:param pyspark_dataframe:
+	:param pyspark_df:
 		A pyspark DataFrame
 	"""
 	
-	sqlContext.registerDataFrameAsTable(pyspark_dataframe, 'dataframe')
+	sqlContext.registerDataFrameAsTable(pyspark_df, 'dataframe')
 
 
 def convert_to_pyspark_df(dataframe) -> DataFrame:
@@ -58,28 +58,33 @@ def convert_to_pyspark_df(dataframe) -> DataFrame:
 	"""
 	
 	# Is the DataFrame a list of dictionaries? RAW?
-	if type(dataframe) is list:
+	if type(dataframe) is DataFrame:
+		return dataframe
+	elif type(dataframe) is list:
 		for row in dataframe:
 			if type(row) is dict:
 				columns = get_column_names(dataframe)
 					rdd: RDD = convert_to_row(dataframe)
 					return sqlContext.createDataFrame(rdd, columns)
-			elif type(dataframe) == 'pandas.core.frame.DataFrame':
-				return sqlContext.createDataFrame(dataframe)
-			else:
-				raise ValueError(f'Invalid DataFrame type: {type(dataframe)}')
+	elif type(dataframe) == 'pandas.core.frame.DataFrame':
+		return sqlContext.createDataFrame(dataframe)
+	else:
+		raise ValueError(f'Invalid DataFrame type: {type(dataframe)}')
 
 
 def sql(query: str, dataframe) -> DataFrame:
+	"""
+	Returns a pyspark Dataframe 
+	Example (RAW DataFrame): 
+		dataframe = [{'Name': 'Rigo', 'age': 3}, {'Name': 'Lindsay', 'age': 5}]
+		sql('select Name, sum(age) from dataframe group by Name', dataframe).show()
+			
+	:param query: 
+		The query to run against the dataframe
+	:param dataframe:
+		A RAW, pyspark, or pandas dataframe		
+	"""
+	
 	pyspark_df: DataFrame = convert_to_pyspark_df(dataframe)
-	register_pyspark_df(pyspark_df)
-	return sqlContext.sql(query)
+	return register_pyspark_df(pyspark_df).sqlContext.sql(query)
 
-
-dataframe = [{'Name': 'Rigo', 'age': 3}, {'Name': 'Lindsay', 'age': 5}]
-
-sql('select Name, sum(age) from dataframe group by Name', dataframe).show()
-
-# df_empty = pd.DataFrame({'A' : []})
-# if type(df_empty):
-#    print('test')
