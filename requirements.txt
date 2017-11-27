@@ -1,3 +1,4 @@
 pyspark
 jinja2
 pytest
+sqlparse

@@ -91,8 +91,8 @@ def sql(query: str, dataframe=None, table: str = None, **kwargs) -> DataFrame:
 	:param kwargs:
 		Any rendering variables to inject into the SQL query file prior to executing the query.
 	"""
-	
-	pyspark_df: DataFrame = convert_to_pyspark_df(dataframe)
+	if dataframe:
+		pyspark_df: DataFrame = convert_to_pyspark_df(dataframe)
 	if table:
 		register_pyspark_df(pyspark_df, table)
 	rendered_query = templating.render(query, **kwargs)
