@@ -25,9 +25,10 @@ To select data from a DataFrame and also register a table in memory do the follo
 ```python
 print('Inventory:')
 inventory_pyspark_df = sqldf.sql(
-	"""SELECT item,
-		      quantity AS quantity_available
-		 FROM inventory_table
+	"""
+	SELECT item,
+           quantity AS quantity_available
+      FROM inventory_table
 	""",
 	inventory,
 	table='inventory_table')
@@ -35,10 +36,11 @@ inventory_pyspark_df.show()
 
 print('Orders:')
 orders_pyspark_df = sqldf.sql(
-	"""SELECT order_number,
-			  item,
-			  quantity AS quantity_ordered
-		 FROM order_table
+	"""
+	SELECT order_number,
+           item,
+           quantity AS quantity_ordered
+      FROM order_table
 	""",
 	orders,
 	table='order_table')
@@ -50,10 +52,11 @@ Since the table has been specified above, the table will be saved in memory. The
 # Get inventory below quantity of 10 so we can order more of these items.
 print('Items low in quantity:')
 inventory_low = sqldf.sql(
-	"""SELECT item,
-			  quantity AS quantity_low
-	     FROM inventory_table
-	    WHERE quantity < {{ quantity }}
+	"""
+	SELECT item,
+           quantity AS quantity_low
+      FROM inventory_table
+     WHERE quantity < {{ quantity }}
 	""",
 	quantity=10)
 inventory_low.show()
