@@ -39,7 +39,7 @@ def convert_to_row(list_of_dictionaries: list) -> RDD:
 		v for (k, v) in _.items()])
 
 
-def register_pyspark_df(pyspark_df: DataFrame, table: str = 'dataframe'):
+def register_pyspark_df(pyspark_df: DataFrame, table: str = None):
 	"""
 	Register the dataframe as a table so it can be query using sql
 	
@@ -75,7 +75,7 @@ def convert_to_pyspark_df(dataframe) -> DataFrame:
 		raise ValueError(f'Invalid DataFrame type: {type(dataframe)}')
 
 
-def sql(query: str, dataframe=None, table: str = 'dataframe', **kwargs) -> DataFrame:
+def sql(query: str, dataframe=None, table: str = None, **kwargs) -> DataFrame:
 	"""
 	Returns a pyspark Dataframe 
 	Example (RAW DataFrame): 
@@ -93,6 +93,7 @@ def sql(query: str, dataframe=None, table: str = 'dataframe', **kwargs) -> DataF
 	"""
 	
 	pyspark_df: DataFrame = convert_to_pyspark_df(dataframe)
-	register_pyspark_df(pyspark_df, table)
+	if table:
+		register_pyspark_df(pyspark_df, table)
 	rendered_query = templating.render(query, **kwargs)
 	return sqlContext.sql(rendered_query)
