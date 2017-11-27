@@ -7,9 +7,10 @@ orders = [{'order_number': 1, 'item': 'Banana', 'quantity': 10}, {'order_number'
 # To select data from a DataFrame and also register a table in memory do the following:
 print('Inventory:')
 inventory_pyspark_df = sqldf.sql(
-	"""SELECT item, 
-		      quantity AS quantity_available 
-		 FROM inventory_table
+	"""
+	SELECT item,
+		   quantity AS quantity_available
+	  FROM inventory_table
 	""",
 	inventory,
 	table='inventory_table')
@@ -17,10 +18,11 @@ inventory_pyspark_df.show()
 
 print('Orders:')
 orders_pyspark_df = sqldf.sql(
-	"""SELECT order_number, 
-			  item, 
-			  quantity AS quantity_ordered 
-		 FROM order_table
+	"""
+	SELECT order_number, 
+		   item, 
+		   quantity AS quantity_ordered 
+	  FROM order_table
 	""",
 	orders,
 	table='order_table')

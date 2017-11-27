@@ -47,7 +47,7 @@ orders_pyspark_df = sqldf.sql(
 orders_pyspark_df.show()
 ```
 
-Since the table has been specified above, the table will be saved in memory. The next time you want to select data from the table jut do the following:
+Since the table has been specified above, the table will be registered in memory. The next time you want to select data from the table jut do the following (Note that we don't specify table or DataFrame):
 ```python
 # Get inventory below quantity of 10 so we can order more of these items.
 print('Items low in quantity:')
@@ -62,8 +62,7 @@ inventory_low = sqldf.sql(
 inventory_low.show()
 ```
 
-Ge the orders that will be able to be fulfilled. Note that since we already registered these tables, we don’t need to specify the able again.
-You can specify the table name if you want to use that later in another query.
+Now we are going to get a list of orders that will be able to be fulfilled. You can specify the table name if you want to register the results of this query in memory so it can be used later. 
 
 ```python
 print('Orders with inventory: ')
